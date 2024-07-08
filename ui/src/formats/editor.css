@@ -1,0 +1,17 @@
+div#editer{
+    border: 1px solid rgb(185, 183, 183);
+    padding: 20px;
+
+
+}
+div .ql-editor{
+    overflow: hidden;
+}
+
+div .ql-editor::-webkit-scrollbar {
+    display: none;
+}
+
+.ql-font{
+    width: 300px
+}
