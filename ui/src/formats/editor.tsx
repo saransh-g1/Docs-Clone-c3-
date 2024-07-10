@@ -12,7 +12,7 @@ import QuillEditor, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {toPng} from "html-to-image"
 import axios from "axios"
- 
+import {SiGoogledocs} from "react-icons/si"
 
 const Editor = () => {
   // Editor state
@@ -165,12 +165,17 @@ function docsSaving(){
       .catch((err) => {
         console.log(err);
       });
-  };
+  }
 
 
   function Websocket(){
+   
     socket.on("connect", () => {
       console.log(socket.id)
+       
+    
+
+
 
     });
 
@@ -182,8 +187,14 @@ function docsSaving(){
   return (
     <div className="flex flex-col items-center justify-center"> 
 
-<button onClick={docsSaving}>Get your docs saved</button>
-<button onClick={Websocket}>Real time collab</button>
+    <div className='flex justify-between my-1 items-center w-full mx-3'> <SiGoogledocs color="rgb(66, 133, 244)" size={38}/>
+    <div className='flex justify-center items-center'>
+
+<button onClick={docsSaving} className='h-10 w-max p-3 mx-2 bg-blue-400 text-white  rounded-xl font-semibold'>Get your docs saved</button>
+<button onClick={Websocket} className='h-10 w-max p-3 mx-2  bg-blue-400 rounded-xl text-white font-semibold'>Real time collab</button>
+</div>
+    </div>
+
          <div id="toolbar-container" className="rounded-full bg-blue-100 my-3 w-full flex justify-center block">
   <span className="ql-formats">
     <select className="ql-font"></select>

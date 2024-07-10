@@ -242,10 +242,10 @@ app2.post("/api/v1/getsavedoc",async(req,res)=>{
   const token=req.cookies.token;
   const decoded= jwt.verify(token, "123123") as JwtPayload;
   const body=req.body
-const docs=await prisma.docs.findFirst({
+  if(decoded?.id==null) return res.json({msg:"error"})
+  const docs=await prisma.docs.findFirst({
   where:{
     id: body.id,
-    userId:decoded?.id
   }
 })
  res.json({

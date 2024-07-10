@@ -32,6 +32,7 @@ const cors_1 = __importDefault(require("cors"));
 // })
 ////ws///////////////////////////////////////////////////////////////////
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 var location = "";
 const httpServer = app.listen(8080, () => { console.log("foubu"); });
 const io = new socket_io_1.Server(httpServer, {
@@ -204,10 +205,11 @@ app2.post("/api/v1/getsavedoc", (req, res) => __awaiter(void 0, void 0, void 0, 
     const token = req.cookies.token;
     const decoded = jsonwebtoken_1.default.verify(token, "123123");
     const body = req.body;
+    if ((decoded === null || decoded === void 0 ? void 0 : decoded.id) == null)
+        return res.json({ msg: "error" });
     const docs = yield prisma.docs.findFirst({
         where: {
             id: body.id,
-            userId: decoded === null || decoded === void 0 ? void 0 : decoded.id
         }
     });
     res.json({
