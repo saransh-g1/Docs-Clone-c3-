@@ -1,5 +1,5 @@
 import ws, { WebSocketServer,WebSocket } from "ws"
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 
 import express from "express"
 import {PrismaClient} from "@prisma/client"
@@ -27,6 +27,18 @@ import cors from "cors"
 
 
 ////ws///////////////////////////////////////////////////////////////////
+interface ExtendedSocket extends Socket {
+  username?: string,
+  location?: string
+}
+
+interface data{
+  location:string,
+  user:string
+}
+var memory:data[]=[];
+
+
 const app=express();
 app.use(cors())
 var location="";
@@ -37,23 +49,72 @@ const io = new Server(httpServer, {
     credentials: true
 } });
 
-io.on("connection", (socket) => {
-  console.log(socket.id)
+io.on("connection", async(socket:ExtendedSocket) => {
+  
   
   socket.on("client",(msg)=>{
-    console.log(msg)
-    socket.broadcast.to("/"+location).emit("server",msg)
+    
+    socket.broadcast.to("/"+msg.location).emit("server",msg)
   })
 
-socket.on("ref",(msg)=>{
-  console.log(msg)
-location=msg
-socket.join("/"+location)
+
+  socket.on("cursor-client",(msg)=>{
+    console.log(msg.range);
+    socket.broadcast.to("/"+msg.location).emit("cursor-server",{range:msg.range,user:msg.user})
+  })
+
+  socket.on("disconnect",async(msg)=>{
+   memory=[];
+  
+    const sockets:any = await io.fetchSockets();
+    for(const socket of sockets){
+      memory.push({location:socket.location,user:socket.username})
+      // console.log(socket.rooms)
+      // await new Promise((res)=> setTimeout(res,200));
+      // socket.broadcast.to("/1").emit("socketCommit",socket.username)
+      // console.log(socket.username+"refSockets")
+    }
+     for(const socket of sockets){
+      socket.emit("socketCommit",memory);
+     }
+
+
+   
+  })
+
+socket.on("ref",async(msg)=>{
+  memory=[];
+socket.username=msg.user;
+socket.location=msg.location;
+location=msg.location;
+
+// const manysocket= await io.sockets.clients('room');
+// manysocket.map((e:any)=>{console.log(e.username)
+// })
+
+ socket.join("/"+location)
+
+
+const sockets: any = await io.in("/"+location).fetchSockets();
+  for(const socket of sockets){
+    memory.push({location:socket.location,user:socket.username})
+    // console.log(socket.rooms)
+    // await new Promise((res)=> setTimeout(res,200));
+    // socket.broadcast.to("/1").emit("socketCommit",socket.username)
+    // console.log(socket.username+"refSockets")
+  }
+   for(const socket of sockets){
+    socket.emit("socketCommit",memory);
+   }
+// await new Promise(res=>setTimeout(res,1000))
+// console.log(memory)
+// memory.map((e)=>{
+//   console.log(e.location+"helll")
+//   socket.to("/"+e.location).emit("commit",e.user);
+// })
 })
 
 });
-
-
 
 
 
@@ -83,6 +144,7 @@ type signup={
 
 
 app2.post("/api/v1/signup",async (req,res)=>{
+  try{
   const body : signup=req.body;
   const email=body.email
   const user= await prisma.user.create({
@@ -97,11 +159,14 @@ res.cookie("token", jwttoken);
   res.json({
     msg: "user created succesfully",
     jwttoken
-  })
+  })}catch(e){
+    console.log(e);
+  }
 
 })
 
 app2.post("/api/v1/signin",async (req,res)=>{
+  try{
   const body:signup=req.body;
   const user= await prisma.user.findFirst({
     where:{
@@ -121,6 +186,9 @@ app2.post("/api/v1/signin",async (req,res)=>{
       msg : "error occured"
     })
   }
+}catch(e){
+  console.log(e)
+}
 })
 
 
@@ -144,6 +212,7 @@ app2.post("/api/v1/signin",async (req,res)=>{
 // })
 
 app2.post("/api/v1/savedoc",async(req,res)=>{
+  try{
   const token=req.cookies.token;
   const decoded= jwt.verify(token, "123123") as JwtPayload;
 const body=req.body
@@ -171,6 +240,8 @@ const body=req.body
   res.json({
     msg:"brutal error"
   })
+ }}catch(e){
+  console.log(e);
  }
 
 })
@@ -179,24 +250,18 @@ app2.post("/api/v1/savedocwithops",async(req,res)=>{
   const token=req.cookies.token;
   const decoded= jwt.verify(token, "123123") as JwtPayload;
   const body=req.body
-  const user= await prisma.user.update({
-    where:{
-      id: decoded?.id,
-    },
-    data:{
-      docs:{
-        update:{
-          data:{image: body.image, ops :body.ops},
-          where:{id: body.id}
-        }
-      }
-    }
-  })
-  const docs= await prisma.docs.findFirst({
+ 
+  const docs= await prisma.docs.update({
     where:{
       id:body.id
-    }
+    },
+    
+    data:{image: body.image, ops :body.ops},
+          
+      
+   
   })
+  
   res.json({
     msg:"updated",
     docs
@@ -254,4 +319,75 @@ app2.post("/api/v1/getsavedoc",async(req,res)=>{
  })
 
 })
+
+app2.post("/api/v1/userConnectionDoc",async(req,res)=>{
+  const token=req.cookies.token;
+  const decoded= jwt.verify(token, "123123") as JwtPayload;
+  const body=req.body
+  if(decoded?.id==null) return res.json({msg:"error"})
+   const finduserwithdocs=await prisma.userConnectedToDocs.findFirst({
+  where:{
+    userId:decoded?.id,
+    docsId:body.docsId
+  }})
+  if(finduserwithdocs===null){
+    const createuserwithdocs=await prisma.userConnectedToDocs.create({
+      data:{
+        userId:decoded?.id,
+        docsId: body.docsId
+         }
+    })
+    return res.json({
+      msg:"created",
+      createuserwithdocs
+    })
+  }
+  res.json({
+    msg:"already exist",
+    finduserwithdocs
+  })
+})
+
+
+
+app2.get("/api/v1/getdocswithconnecteduser",async(req,res)=>{
+  const token=req.cookies.token;
+  const decoded= jwt.verify(token, "123123") as JwtPayload;
+ 
+  if(decoded?.id==null) return res.json({msg:"error"})
+  const user= await prisma.userConnectedToDocs.findMany({
+where:{
+  userId: decoded?.id,
+},
+include:{
+  docs:true
+}
+})
+res.json({
+   user
+})
+})
+
+
+app2.post("/api/v1/getspecificdocscontouser",async(req,res)=>{
+  const token=req.cookies.token;
+  const decoded= jwt.verify(token, "123123") as JwtPayload;
+ const body=req.body
+  if(decoded?.id==null) return res.json({msg:"error"})
+  const user= await prisma.userConnectedToDocs.findMany({
+where:{
+  
+  userId: decoded?.id,
+  docsId: body.docsId
+},
+include:{
+  docs:true
+}
+})
+res.json({
+   user
+})
+})
+
 app2.listen(3000)
+

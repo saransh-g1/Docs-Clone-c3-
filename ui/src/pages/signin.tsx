@@ -12,7 +12,7 @@ import 'firebaseui/dist/firebaseui.css'
 import { useNavigate } from "react-router-dom";
 import DotLoader from "react-spinners/DotLoader";
 export function Login(){
-    const nav=useNavigate()
+    const nav=useNavigate();
 const [email,setEmail]= useState("")
 const [password,setPass]= useState("")
 const [us, setUser]= useState<any>()
@@ -141,9 +141,11 @@ useEffect(() => {
                    withCredentials: true,
                })
                console.log(response.data)
-          // signin()
+           signin()
            console.log("j")
+           localStorage.setItem("email",email);
            setLoading(false)
+           nav("/dashboard")
            }}>signin</button>
           
               <div  className='flex flex-col items-center justify-center '>

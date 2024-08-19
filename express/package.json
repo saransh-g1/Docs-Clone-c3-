@@ -27,6 +27,7 @@
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/ws": "^8.5.10",
-    "prisma": "^5.16.1"
+    "prisma": "^5.16.1",
+    "typescript": "^5.5.4"
   }
 }

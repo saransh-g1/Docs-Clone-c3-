@@ -7,7 +7,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 // React stuff
 import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-
+import { useSetRecoilState } from 'recoil'; 
 // Auth service
 import {auth} from '../firebase/firebase-auth'
 import { Navsign } from '../components/navbar.sign';
@@ -15,11 +15,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from "axios"
 import { DotLoader } from 'react-spinners';
+import {user} from "../components/user.account"
 export default () => {
     const [email, setEmail]= useState("")
 const [password, setPassword]= useState("")
 const [loading, setLoading]= useState<boolean>(false)
-
+const setUser=useSetRecoilState(user);
 const nav= useNavigate()
  
     async function signup(){
@@ -32,7 +33,7 @@ const nav= useNavigate()
            const user = userCredential.user;
            console.log(user.providerData[0].email)
            console.log(userCredential.user.providerId)
-           nav("/dashboard")
+           nav("/dashboard");
            // ...
          })
          .catch((error) => {
@@ -80,6 +81,7 @@ const nav= useNavigate()
            <button className="my-5 rounded-lg bg-red-500 text-white h-10 text-2xl font-bold" onClick={
             
             async()=>{
+
               setLoading(true);
               const response=await axios.post("http://localhost:3000/api/v1/signup",
                   {
@@ -89,8 +91,9 @@ const nav= useNavigate()
                     withCredentials: true,
                 })
                     console.log(response)
-              
-            signup();
+                   setUser(email);
+                   localStorage.setItem("email",email);
+                  // signup();
           setLoading(false);
           }
             
