@@ -76,13 +76,13 @@ const Editor = () => {
       withCredentials:true
      }).then(res=>{
       console.log(res.data)
-      axios.post("http://localhost:3000/api/v1/getspecificdocscontouser",{
+      axios.post("http://localhost:3000/api/v2/cachedDocs",{
         docsId: parseInt(docid[4]),
        },{
         withCredentials:true
        }).then(res=>{
-        console.log(res.data.user[0].docs.ops)
-       localStorage.setItem("ops",res.data.user[0].docs.ops)
+        console.log(res.data)
+       localStorage.setItem("ops",res.data.response)
     
        const operations=localStorage.getItem("ops")
        if(operations!=null){
@@ -193,7 +193,7 @@ const Editor = () => {
       
     } else if (source == 'user') {
       localStorage.setItem("ops",JSON.stringify(quiller.getContents()))
-      socket.emit("client", {data:delta.ops, location: window.location.href.split("/")[4]})
+      socket.emit("client", {data:delta.ops, location: window.location.href.split("/")[4], document: JSON.stringify(quiller.getContents())})
      setmsg(JSON.stringify(quiller.getContents()))
       // newSocket.send(JSON.stringify(delta.ops))
      
@@ -209,6 +209,7 @@ const cursorsOne:any = quiller.getModule('cursors');
   
    socket.on("cursor-server",(msg)=>{
     console.log(msg)
+    console.log(cursorinRoom.length)
   //  const cursorRequired=cursorinRoom.filter((e:any)=>e.)
     setTimeout(() => cursorsTwo.moveCursor(msg.user,msg.range), 500);
 
@@ -311,7 +312,7 @@ function docsSaving(){
       <div className='flex *:font-lato *:mx-1'>
          <button>file</button>
          <button>insert</button>
-         <button onClick={()=>{   
+         <button className="text-blue-400" onClick={()=>{   
 console.log(loader)
 docsSaving();
 console.log(loader)
@@ -321,8 +322,9 @@ setLoader(false);}}>save</button>
       </div>
       </div>
       </div>
+      
     <div className='flex justify-center items-center'>
-      <p>{cursorinRoom.length}</p>
+    
       <div className='flex items-center justify-center mx-4'>
         {/* {userInRoom.map((e:any)=>{
           return <button className='rounded-full h-10 w-10 text-white bg-slate-400 mx-3'>{e.user}</button>
@@ -335,8 +337,29 @@ setLoader(false);}}>save</button>
 
       </div>
       <div className='group flex '>
-      <div className='rounded-lg p-2 w-max h-max hidden group-hover:block  font-semibold text-sm mr-1'>click to copy!</div> 
- <button className='flex text-xl px-4 py-2 h-10 bg-blue-200 rounded-l-full w-28 font-lato *:mx-1 '  onClick={() =>  navigator.clipboard.writeText(window.location.href)}><MdLockOutline size={23}></MdLockOutline> Share</button>
+      <dialog className='border-none outline-none rounded-lg font-lato'>
+        <div className='w-[400px] h-max bg-white rounded-lg p-7'>
+           <p className='text-2xl '>Share 'Untitled document'</p>
+           <p className='my-4'>People with access</p>
+          <div className='flex justify-between my-4'>
+            <div className='flex items-center '>
+               <p className='text-xl  mr-4 rounded-full bg-slate-400 text-white h-10 w-10 flex justify-center items-center'>{localStorage.getItem("email")?.substring(0,1)}</p>
+               <div className='flex flex-col'>
+                <p>{localStorage.getItem("email")?.split("@")[0]}</p>
+                <p>{localStorage.getItem("email")}</p>
+               </div>
+               </div>
+               <p className='text-slate-600 flex justify-center items-center'>owner
+                </p>
+          </div>
+          
+          <div className='flex justify-between items-center my-8'>
+            <button className='border border-slate-400 text-blue-600 rounded-full px-6 py-1' onClick={()=>navigator.clipboard.writeText(window.location.href)}>copy Link</button>
+            <button className='bg-blue-600 rounded-full text-xl text-white font-semibold px-6 py-1' onClick={()=>{document.querySelector('dialog')?.close()}}>Done</button>
+          </div>
+        </div>
+        </dialog>
+ <button className='flex text-xl px-4 py-2 h-10 bg-blue-200 rounded-l-full w-28 font-lato *:mx-1 '  onClick={() =>{document.querySelector('dialog')!.showModal();  }}><MdLockOutline size={23}></MdLockOutline> Share</button>
  </div> 
  <button className='flex text-xl bg-blue-200 rounded-r-full w-8 h-10 font-lato *:mx-1 flex items-center justify-center border-l-4 border-yellow-100'><IoIosArrowDown size={16}></IoIosArrowDown></button>
 
@@ -408,10 +431,10 @@ setLoader(false);}}>save</button>
 
 
 
-    <div id="editer" className="w-1/2 h-screen my-3 block overflow-hidden" style={{borderTop:"px"}} ref={elementRef}>  </div>
+    <div id="editer" className="w-1/2 min-h-screen my-3 block " style={{borderTop:"px"}}> </div>
 
    {loader? <div  className='z-10 absolute top-1/2'> <ClipLoader  loading={loader}
-       size={40}
+       size={40} 
        aria-label="Loading Spinner"
        data-testid="loader"></ClipLoader></div>: <></>}
      

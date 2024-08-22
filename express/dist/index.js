@@ -18,6 +18,7 @@ const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
+const redis_1 = __importDefault(require("./redis"));
 var memory = [];
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
@@ -30,9 +31,16 @@ const io = new socket_io_1.Server(httpServer, {
     }
 });
 io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
-    socket.on("client", (msg) => {
+    socket.on("client", (msg) => __awaiter(void 0, void 0, void 0, function* () {
+        const docsId = msg.location;
+        try {
+            yield redis_1.default.set(docsId, msg.document);
+        }
+        catch (e) {
+            console.log(e);
+        }
         socket.broadcast.to("/" + msg.location).emit("server", msg);
-    });
+    }));
     socket.on("cursor-client", (msg) => {
         console.log(msg.range);
         socket.broadcast.to("/" + msg.location).emit("cursor-server", { range: msg.range, user: msg.user });
@@ -293,22 +301,69 @@ app2.get("/api/v1/getdocswithconnecteduser", (req, res) => __awaiter(void 0, voi
     });
 }));
 app2.post("/api/v1/getspecificdocscontouser", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.cookies.token;
-    const decoded = jsonwebtoken_1.default.verify(token, "123123");
-    const body = req.body;
-    if ((decoded === null || decoded === void 0 ? void 0 : decoded.id) == null)
-        return res.json({ msg: "error" });
+    //   const token=req.cookies.token;
+    //   const decoded= jwt.verify(token, "123123") as JwtPayload;
+    //  const body=req.body
+    //if(decoded?.id==null) return res.json({msg:"error"})
+    const start = performance.now();
     const user = yield prisma.userConnectedToDocs.findMany({
         where: {
-            userId: decoded === null || decoded === void 0 ? void 0 : decoded.id,
-            docsId: body.docsId
+            userId: 1,
+            docsId: 1
         },
         include: {
             docs: true
         }
     });
+    const end = performance.now();
+    console.log(user[0].docs.ops);
     res.json({
-        user
+        user,
+        time: start - end
+    });
+}));
+app2.post("/api/v2/cachedDocs", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const start = performance.now();
+    const token = req.cookies.token;
+    const decoded = jsonwebtoken_1.default.verify(token, "123123");
+    const body = req.body;
+    if ((decoded === null || decoded === void 0 ? void 0 : decoded.id) == null)
+        return res.json({ msg: "error" });
+    yield redis_1.default.get(body.docsId, function (error, value) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const end = performance.now();
+            if (value != null) {
+                return res.json({
+                    response: value,
+                    time: end - start
+                });
+            }
+            else {
+                const user = yield prisma.userConnectedToDocs.findMany({
+                    where: {
+                        userId: decoded === null || decoded === void 0 ? void 0 : decoded.id,
+                        docsId: body.docsId
+                    },
+                    include: {
+                        docs: true
+                    }
+                });
+                console.log(user[0].docs.ops);
+                yield redis_1.default.set(body.docsId, user[0].docs.ops, { Ex: "40000" });
+                return res.json({
+                    response: user[0].docs.ops,
+                });
+            }
+        });
+    });
+}));
+app2.get("/trial", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var valu;
+    const msg = yield redis_1.default.get("msg", function (error, value) {
+        valu = value;
+        res.json({
+            msgaage: valu,
+        });
     });
 }));
 app2.listen(3000);

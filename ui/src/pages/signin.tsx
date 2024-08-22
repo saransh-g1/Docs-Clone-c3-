@@ -4,7 +4,7 @@ import {auth} from '../firebase/firebase-auth'
 import {Link} from "react-router-dom"
 import { Navsign } from '../components/navbar.sign';
 import axios from "axios"
-
+import "./signin.css"
 
 import firebase from 'firebase/compat/app';
 import * as firebaseui from 'firebaseui'
@@ -110,10 +110,13 @@ useEffect(() => {
       />
  :  
         <div className=" flex flex-col justify-center items-center h-screen w-screen">
-         <Navsign></Navsign>
-         <div className="h-screen flex items-center mt-2">
-       
-         <div className="flex flex-col p-8   justify-center shadow-2xl rounded-lg">
+         {/* <Navsign></Navsign> */}
+         <div className="h-screen flex items-center mt-2 relative z-10 ">
+          <div className="bg-blue-500 h-[500px] w-[430px] flex justify-center items-center flex-col">
+            <h1 className="text-center text-white text-7xl font-lato my-16">C3</h1>
+            <p className="text-md font-thin text-white font-lato m-3 text-center">This is the platform where one can convert their wisdom to worthy actions with implementing seamless collaborations to signify real team spirit.</p>
+          </div>
+         <div className="flex flex-col p-8 justify-center shadow-2xl rounded-lg h-[500px] w-[430px] bg-white">
            <div className="flex justify-center mt-2 my-2">
            <h1 className="text-3xl font-bold">Login</h1>
           
@@ -126,13 +129,13 @@ useEffect(() => {
            </div>
            <div>
            <p className="mt-1 text-md " >email</p>
-         <input className="mt-1 rounded-lg border bg-stone-50 p-1 text-lg font-semibold w-full"   onChange={(e:any)=>{setEmail(e.target.value)}} placeholder="email"></input>
+         <input className="mt-1 rounded-lg border bg-stone-50 p-1 text-lg font-semibold w-full" type="email"  onChange={(e:any)=>{setEmail(e.target.value)}} placeholder="email"></input>
          </div>
          <div  className="mt-3">
            <p className="mt-1 text-md ">password</p>
          <input className="mt-1 rounded-lg border bg-stone-50 p-1 text-lg font-semibold w-full "    onChange={(e:any)=>{setPass(e.target.value)}} placeholder="password"></input>
          </div>
-          <button className="my-5 rounded-lg bg-red-500 text-white h-10 text-2xl font-bold" onClick={async()=>{ setLoading(true);
+          <button className="my-5 rounded-md bg-blue-500 text-white h-10 text-2xl font-bold" onClick={async()=>{ setLoading(true);
           const response =await axios.post("http://localhost:3000/api/v1/signin",
                  {
                      email:email,

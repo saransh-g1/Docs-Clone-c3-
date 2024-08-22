@@ -6,7 +6,7 @@ import {PrismaClient} from "@prisma/client"
 import jwt, { JwtPayload } from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import cors from "cors"
-
+import client from "./redis"
 // const wss=new WebSocketServer({server});
 
 // wss.on("connection",function connection(ws){
@@ -52,8 +52,13 @@ const io = new Server(httpServer, {
 io.on("connection", async(socket:ExtendedSocket) => {
   
   
-  socket.on("client",(msg)=>{
-    
+  socket.on("client",async(msg)=>{
+    const docsId=msg.location;
+    try{
+    await client.set(docsId,msg.document);
+  }catch(e){
+    console.log(e)
+  }
     socket.broadcast.to("/"+msg.location).emit("server",msg)
   })
 
@@ -370,24 +375,98 @@ res.json({
 
 
 app2.post("/api/v1/getspecificdocscontouser",async(req,res)=>{
-  const token=req.cookies.token;
-  const decoded= jwt.verify(token, "123123") as JwtPayload;
- const body=req.body
-  if(decoded?.id==null) return res.json({msg:"error"})
+//   const token=req.cookies.token;
+//   const decoded= jwt.verify(token, "123123") as JwtPayload;
+//  const body=req.body
+  //if(decoded?.id==null) return res.json({msg:"error"})
+const start=performance.now()
   const user= await prisma.userConnectedToDocs.findMany({
 where:{
   
-  userId: decoded?.id,
-  docsId: body.docsId
+  userId: 1,
+  docsId: 1
 },
 include:{
   docs:true
 }
 })
+const end=performance.now()
+console.log(user[0].docs.ops);
 res.json({
-   user
+   user,
+   time: start-end
+
 })
 })
 
+
+app2.post("/api/v2/cachedDocs",async(req,res)=>{
+  const start=performance.now()
+
+
+   const token=req.cookies.token;
+   const decoded= jwt.verify(token, "123123") as JwtPayload;
+   const body=req.body
+   if(decoded?.id==null) return res.json({msg:"error"});
+
+  await client.get(body.docsId,async function(error:any, value:any){
+    const end=performance.now()
+    if(value!=null){
+      return res.json({
+        response:value,
+        time: end-start
+      })
+    }else{
+      const user= await prisma.userConnectedToDocs.findMany({
+        where:{
+          
+          userId: decoded?.id,
+          docsId: body.docsId
+        },
+        include:{
+          docs:true
+        }
+        })
+        console.log(user[0].docs.ops);
+        await client.set(body.docsId, user[0].docs.ops,{Ex:"40000"})
+        return res.json({
+           response: user[0].docs.ops,
+
+        })
+    }
+   
+  });
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app2.get("/trial",async(req,res)=>{
+  var valu;
+  const msg=await client.get("msg",function (error:any, value:any) {
+    valu=value
+    res.json({
+      msgaage:valu,
+    })  })
+ 
+})
+
+
+
 app2.listen(3000)
+
 
