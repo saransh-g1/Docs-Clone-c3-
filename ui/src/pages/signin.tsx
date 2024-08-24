@@ -1,8 +1,7 @@
-import {useCallback, useState,useEffect} from "react"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useState,useEffect} from "react"
+import {signInWithEmailAndPassword } from "firebase/auth";
 import {auth} from '../firebase/firebase-auth'
 import {Link} from "react-router-dom"
-import { Navsign } from '../components/navbar.sign';
 import axios from "axios"
 import "./signin.css"
 
@@ -24,7 +23,7 @@ useEffect(() => {
   ui.start('#firebaseui-auth-container', {
    
       callbacks: {
-           signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+           signInSuccessWithAuthResult: function(authResult) {
             try{ 
               console.log(authResult)
                // Action if the user is authenticated successfully
@@ -45,7 +44,7 @@ useEffect(() => {
               return Promise.resolve();
             }
             // The credential the user tried to sign in with.
-            var cred = error.credential;
+         //   var cred = error.credential;
             // Copy data from anonymous user to permanent user and delete anonymous
             // user.
             // ...
@@ -94,6 +93,7 @@ useEffect(() => {
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
+            console.log(errorCode, errorMessage);
             setLoading(false)
           });
         

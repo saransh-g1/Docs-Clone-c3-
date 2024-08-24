@@ -1,11 +1,9 @@
 // FirebaseUI
-import firebase from 'firebase/compat/app';
-import * as firebaseui from 'firebaseui'
+
 import 'firebaseui/dist/firebaseui.css'
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {  createUserWithEmailAndPassword } from "firebase/auth";
 
 // React stuff
-import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from 'recoil'; 
 // Auth service
@@ -39,6 +37,7 @@ const nav= useNavigate()
          .catch((error) => {
            const errorCode = error.code;
            const errorMessage = error.message;
+           console.log(errorCode+errorMessage);
            // ..
          })
         )
@@ -93,7 +92,7 @@ const nav= useNavigate()
                     console.log(response)
                    setUser(email);
                    localStorage.setItem("email",email);
-                  // signup();
+                   signup();
           setLoading(false);
           }
             

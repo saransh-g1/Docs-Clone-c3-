@@ -37,12 +37,11 @@ interface data{
   user:string
 }
 var memory:data[]=[];
+const app2=express();
 
 
-const app=express();
-app.use(cors())
 var location="";
-const httpServer = app.listen(8080, ()=>{console.log("foubu")})
+const httpServer = app2.listen(3000, ()=>{console.log("foubu")})
 const io = new Server(httpServer, { 
     cors:{
     origin: "http://localhost:5173",
@@ -128,7 +127,6 @@ const sockets: any = await io.in("/"+location).fetchSockets();
 
 
 
-const app2=express();
 app2.use(cookieParser())
 app2.use(express.json({limit:'50mb'}))
 app2.use(cors({
@@ -409,14 +407,14 @@ app2.post("/api/v2/cachedDocs",async(req,res)=>{
    const body=req.body
    if(decoded?.id==null) return res.json({msg:"error"});
 
-  await client.get(body.docsId,async function(error:any, value:any){
-    const end=performance.now()
-    if(value!=null){
-      return res.json({
-        response:value,
-        time: end-start
-      })
-    }else{
+           const response=await client.get(body.docsId.toString())
+
+           res.json({
+            response
+           })
+           console.log(response);
+
+    if(response==null){
       const user= await prisma.userConnectedToDocs.findMany({
         where:{
           
@@ -428,7 +426,10 @@ app2.post("/api/v2/cachedDocs",async(req,res)=>{
         }
         })
         console.log(user[0].docs.ops);
-        await client.set(body.docsId, user[0].docs.ops,{Ex:"40000"})
+
+        
+        await client.set(body.docsId,"")
+       
         return res.json({
            response: user[0].docs.ops,
 
@@ -437,7 +438,7 @@ app2.post("/api/v2/cachedDocs",async(req,res)=>{
    
   });
 
-})
+
 
 
 
@@ -457,16 +458,10 @@ app2.post("/api/v2/cachedDocs",async(req,res)=>{
 
 app2.get("/trial",async(req,res)=>{
   var valu;
-  const msg=await client.get("msg",function (error:any, value:any) {
-    valu=value
-    res.json({
-      msgaage:valu,
-    })  })
- 
+  const msg=await client.get("msg")
 })
 
 
 
-app2.listen(3000)
 
 

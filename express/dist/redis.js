@@ -9,21 +9,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const redis = require('redis');
-const client = redis.createClient({
-    //  password: '8p2t9T8VC9qjt0B78D8RAGHU7DErV4ab',
-    socket: {
-        host: 'redis-10739.c8.us-east-1-3.ec2.redns.redis-cloud.com',
-        port: 10739
-    },
-});
-var value;
-client.on("error", (e) => { console.log(e); });
-function set() {
+const redis_1 = require("redis");
+const client = (0, redis_1.createClient)();
+client.on('error', (err) => console.log('Redis Client Error', err));
+function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
-        yield client.set('key', 'value');
-        value = yield client.get('key');
+        try {
+            yield client.connect();
+            console.log("Connected to Redis");
+        }
+        catch (error) {
+            console.error("Failed to connect to Redis", error);
+        }
     });
 }
-set().then(() => { });
+startServer();
+const ex = () => __awaiter(void 0, void 0, void 0, function* () {
+    yield client.set("1", "sifes");
+    const value = yield client.get("5");
+    console.log(value);
+});
+ex().then(() => { });
 exports.default = client;

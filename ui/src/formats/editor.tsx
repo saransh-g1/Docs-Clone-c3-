@@ -1,18 +1,16 @@
 // Importing helper modules
-import { pdfExporter } from 'quill-to-pdf';
-import { saveAs } from 'file-saver';
-import { Delta } from "quill/core";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import {  useEffect, useState } from "react";
 import ResizeModule from "@botom/quill-resize-module";
 import QuillCursors from 'quill-cursors';
 
 import "./editor.css"
-import { MdLockOutline, MdOutlineKeyboardArrowDown, MdOutlineStarBorder } from "react-icons/md";
+import { MdLockOutline, MdOutlineStarBorder } from "react-icons/md";
 import { MdOutlinePersonAddAlt } from "react-icons/md";
 import { GiAbacus, GiSolidLeaf } from "react-icons/gi";
 import { GiScorpion } from 'react-icons/gi';
 // Importing core components
-import QuillEditor, { Quill } from "react-quill";
+import  { Quill } from "react-quill";
 import { io } from 'socket.io-client';
 // Importing styles
 import "react-quill/dist/quill.snow.css";
@@ -23,10 +21,7 @@ import { ClipLoader } from 'react-spinners';
 import { useNavigate } from 'react-router-dom';
 import { TbBrandOnedrive } from 'react-icons/tb';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
-import { FaPen } from 'react-icons/fa';
-import { Option } from './options';
-import {user} from "../components/user.account"
-import { useRecoilValue } from 'recoil';
+
 
 interface data{
   user:string,
@@ -53,17 +48,11 @@ const color=[
 
 const Editor = () => {
   // Editor state
-  const userEmail=useRecoilValue(user);
-  const [msg, setmsg]= useState<string>("")
   const [status,setStatus]=useState(false)
-  const [editor, setEditor]= useState<Boolean>(false)
  const [loader,setLoader]=useState<boolean>(false)
  const [hidden,setHidden]=useState(false)
  const [userInRoom, setUserInRoom]=useState<data[]>([]);
  const [cursorinRoom, setcursorinRoom]=useState<any>([]);
- const [cursorused,setcursorUsed]=useState<number>(0);
-  const elementRef = useRef(document.body);
-  const rand=Math.random().toString()
   const nav=useNavigate()
   useEffect(()=>{ 
     const  socket= io("http://localhost:8080")
@@ -184,9 +173,9 @@ const Editor = () => {
    
    
 
-  console.log(editor)
 
   quiller.on("text-change",(delta:any, oldDelta:any, source:any) => {
+    console.log(oldDelta);
     // console.log(quiller.getLines()[0].parent.children.length)
     // console.log(quiller.getSelection())
     if (source == 'api') {
@@ -194,7 +183,7 @@ const Editor = () => {
     } else if (source == 'user') {
       localStorage.setItem("ops",JSON.stringify(quiller.getContents()))
       socket.emit("client", {data:delta.ops, location: window.location.href.split("/")[4], document: JSON.stringify(quiller.getContents())})
-     setmsg(JSON.stringify(quiller.getContents()))
+   //  setmsg(JSON.stringify(quiller.getContents()))
       // newSocket.send(JSON.stringify(delta.ops))
      
     }
@@ -215,7 +204,7 @@ const cursorsOne:any = quiller.getModule('cursors');
 
    })
   quiller.on("selection-change",(range:any, oldRange:any, source:any) => {
-  
+  console.log(oldRange);
     if (source == 'api') {
     console.log(range)
       console.log("hekabllo");
@@ -242,37 +231,38 @@ const cursorsOne:any = quiller.getModule('cursors');
 
 
 
- async function pdf(){
+//  async function pdf(){
   
-const pdfAsBlob = await pdfExporter.generatePdf(JSON.parse(msg)); // converts to PDF
-  saveAs(pdfAsBlob, 'pdf-export.pdf');
- }
+// const pdfAsBlob = await pdfExporter.generatePdf(JSON.parse(msg)); // converts to PDF
+//   saveAs(pdfAsBlob, 'pdf-export.pdf');
+//  }
 
- const htmlToImageConvert = () => {
-  toPng(elementRef.current, { cacheBust: false })
-    .then((dataUrl) => {
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      console.log(dataUrl)
-      axios.post("http://localhost:3000/api/v1/savedoc",{
-        image:dataUrl,
-        ops:"hi"
-      },{
-        withCredentials:true,
-      }).then((res)=>{
-          console.log(res.data)
-      })
-      link.click();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+//  const htmlToImageConvert = () => {
+//   toPng(elementRef.current, { cacheBust: false })
+//     .then((dataUrl) => {
+//       const link = document.createElement("a");
+//       link.href = dataUrl;
+//       console.log(dataUrl)
+//       axios.post("http://localhost:3000/api/v1/savedoc",{
+//         image:dataUrl,
+//         ops:"hi"
+//       },{
+//         withCredentials:true,
+//       }).then((res)=>{
+//           console.log(res.data)
+//       })
+//       link.click();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
 
 function docsSaving(){
   const ops=localStorage.getItem("ops")
-
-    toPng(elementRef.current, { cacheBust: false })
+const ele:any=document.getElementById("editer")
+  
+    toPng(ele, { cacheBust: false })
       .then((dataUrl) => {
         const link = document.createElement("a");
         link.href = dataUrl;

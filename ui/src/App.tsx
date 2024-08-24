@@ -4,7 +4,6 @@ import SignInScreen from './pages/signup';
 import {Landing} from "./pages/landing"
 import {Login} from "./pages/signin"
 import {Dash} from "./pages/dash"
-import Example from './pages/example';
 import { RecoilRoot } from 'recoil';
 const App = () => {
 
@@ -18,7 +17,6 @@ const App = () => {
     <Route path="/landing" element={<Landing></Landing>}></Route>
     <Route path="/login" element={<Login></Login>}></Route>
     <Route path="/dashboard" element={<Dash></Dash>}></Route>
-    <Route path="/example" element={<Example></Example>}></Route>
     </Routes>
     </BrowserRouter>
     </RecoilRoot>

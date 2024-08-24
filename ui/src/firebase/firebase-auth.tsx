@@ -1,5 +1,4 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import * as firebaseui from "firebaseui"
     // Import the functions you need from the SDKs you need
@@ -21,10 +20,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
 const auth=getAuth(app)
 
-let ui=
+const ui=
 firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(auth);
 
 export function getUiInstance(){

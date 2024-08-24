@@ -1,17 +1,30 @@
-const redis=require('redis')
+import { createClient } from "redis";
 
-const client = redis.createClient({
-  //  password: '8p2t9T8VC9qjt0B78D8RAGHU7DErV4ab',
-    socket: {
-        host: 'redis-10739.c8.us-east-1-3.ec2.redns.redis-cloud.com',
-        port: 10739
-    },
-});
-var value;
-client.on("error",(e:any)=>{console.log(e)});
-async function set (){
-    await client.set('key', 'value');
-     value = await client.get('key');
+
+const client = createClient();
+client.on('error', (err) => console.log('Redis Client Error', err));
+
+
+async function startServer() {
+    try {
+        await client.connect();
+        console.log("Connected to Redis");
+
+
+    } catch (error) {
+        console.error("Failed to connect to Redis", error);
+    }
 }
-set().then(()=>{})
+
+startServer();
+
+const ex=async()=>{
+   await client.set("1","sifes")
+
+    const value=await client.get("5")
+    console.log(value);
+}
+
+ex().then(()=>{});
+
 export default client

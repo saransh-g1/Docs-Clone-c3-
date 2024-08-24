@@ -7,8 +7,7 @@ import { useEffect,useState } from "react";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { HiOutlineClipboardDocumentList } from "react-icons/hi2";
-import { useRecoilValue } from "recoil";
-import {user} from "../components/user.account"
+
 type info={
     id: number,
     docsId: number,
@@ -25,7 +24,6 @@ export function Dash(){
     const nav=useNavigate()
     const [docs, setdocs] =useState<info[]>()
     const [loader,setLoader]=useState<boolean>(true)
-    const email=useRecoilValue(user)
      useEffect(()=>{
          axios.get("http://localhost:3000/api/v1/getdocswithconnecteduser", {
             withCredentials: true,

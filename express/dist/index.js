@@ -329,41 +329,33 @@ app2.post("/api/v2/cachedDocs", (req, res) => __awaiter(void 0, void 0, void 0, 
     const body = req.body;
     if ((decoded === null || decoded === void 0 ? void 0 : decoded.id) == null)
         return res.json({ msg: "error" });
-    yield redis_1.default.get(body.docsId, function (error, value) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const end = performance.now();
-            if (value != null) {
-                return res.json({
-                    response: value,
-                    time: end - start
-                });
-            }
-            else {
-                const user = yield prisma.userConnectedToDocs.findMany({
-                    where: {
-                        userId: decoded === null || decoded === void 0 ? void 0 : decoded.id,
-                        docsId: body.docsId
-                    },
-                    include: {
-                        docs: true
-                    }
-                });
-                console.log(user[0].docs.ops);
-                yield redis_1.default.set(body.docsId, user[0].docs.ops, { Ex: "40000" });
-                return res.json({
-                    response: user[0].docs.ops,
-                });
+    console.log("hello");
+    const response = yield redis_1.default.get(body.docsId.toString());
+    console.log("hello5");
+    res.json({
+        response
+    });
+    console.log(response);
+    if (response == null) {
+        console.log("hello");
+        const user = yield prisma.userConnectedToDocs.findMany({
+            where: {
+                userId: decoded === null || decoded === void 0 ? void 0 : decoded.id,
+                docsId: body.docsId
+            },
+            include: {
+                docs: true
             }
         });
-    });
+        console.log(user[0].docs.ops);
+        yield redis_1.default.set(body.docsId, "");
+        return res.json({
+            response: user[0].docs.ops,
+        });
+    }
 }));
 app2.get("/trial", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var valu;
-    const msg = yield redis_1.default.get("msg", function (error, value) {
-        valu = value;
-        res.json({
-            msgaage: valu,
-        });
-    });
+    const msg = yield redis_1.default.get("msg");
 }));
 app2.listen(3000);
