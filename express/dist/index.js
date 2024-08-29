@@ -96,7 +96,8 @@ app2.use((0, cors_1.default)({
 const prisma = new client_1.PrismaClient();
 app2.get("/", (req, res) => {
     res.json({
-        msg: "working safely"
+        msg: "working safely",
+        env: process.env.NODE_ENV
     });
 });
 app2.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

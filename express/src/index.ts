@@ -148,7 +148,8 @@ type signup={
 
 app2.get("/",(req,res)=>{
   res.json({
-    msg:"working safely"
+    msg:"working safely",
+    env:process.env.NODE_ENV
   })
 })
 

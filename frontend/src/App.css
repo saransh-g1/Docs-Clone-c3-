@@ -1,4 +1,0 @@
-div[contenteditable="true"]::before {
-    content: attr(placeholder); 
-    color: red;
-}
