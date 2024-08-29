@@ -110,7 +110,12 @@ app2.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, func
             },
         });
         const jwttoken = jsonwebtoken_1.default.sign({ id: user.id }, "123123");
-        res.cookie("token", jwttoken);
+        res.cookie("token", jwttoken, {
+            httpOnly: true,
+            maxAge: 15 * 60 * 1000,
+            sameSite: process.env.NODE_ENV === "Development" ? "lax" : "none",
+            secure: process.env.NODE_ENV === "Development" ? false : true
+        });
         res.json({
             msg: "user created succesfully",
             jwttoken
@@ -130,7 +135,12 @@ app2.post("/api/v1/signin", (req, res) => __awaiter(void 0, void 0, void 0, func
         });
         if (user) {
             const jwttoken = jsonwebtoken_1.default.sign({ id: user.id }, "123123");
-            res.cookie("token", jwttoken);
+            res.cookie("token", jwttoken, {
+                httpOnly: true,
+                maxAge: 15 * 60 * 1000,
+                sameSite: process.env.NODE_ENV === "Development" ? "lax" : "none",
+                secure: process.env.NODE_ENV === "Development" ? false : true
+            });
             res.json({
                 msg: "user got",
                 jwttoken

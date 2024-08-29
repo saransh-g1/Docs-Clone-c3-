@@ -164,7 +164,12 @@ app2.post("/api/v1/signup",async (req,res)=>{
 
   });
 const jwttoken= jwt.sign({id:user.id},"123123")
-res.cookie("token", jwttoken);
+res.cookie("token", jwttoken, {
+  httpOnly: true,
+  maxAge: 15*60*1000,
+  sameSite: process.env.NODE_ENV==="Development"?"lax":"none",
+  secure: process.env.NODE_ENV==="Development"?false:true
+});
   res.json({
     msg: "user created succesfully",
     jwttoken
@@ -185,7 +190,12 @@ app2.post("/api/v1/signin",async (req,res)=>{
   });
   if(user){
   const jwttoken= jwt.sign({id:user.id},"123123")
-  res.cookie("token", jwttoken);
+  res.cookie("token", jwttoken, {
+    httpOnly: true,
+    maxAge: 15*60*1000,
+    sameSite: process.env.NODE_ENV==="Development"?"lax":"none",
+    secure: process.env.NODE_ENV==="Development"?false:true
+  });
     res.json({
       msg: "user got",
       jwttoken
