@@ -10,7 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const redis_1 = require("redis");
-const client = (0, redis_1.createClient)();
+const client = (0, redis_1.createClient)({
+    password: 'OsfinKmjN427lypv56XbiHcy74Jd7zof',
+    socket: {
+        host: 'redis-17710.c11.us-east-1-2.ec2.redns.redis-cloud.com',
+        port: 17710
+    }
+});
 client.on('error', (err) => console.log('Redis Client Error', err));
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -31,3 +37,4 @@ const ex = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 ex().then(() => { });
 exports.default = client;
+//# sourceMappingURL=redis.js.map

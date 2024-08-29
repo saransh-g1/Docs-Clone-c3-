@@ -20,10 +20,9 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const redis_1 = __importDefault(require("./redis"));
 var memory = [];
-const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+const app2 = (0, express_1.default)();
 var location = "";
-const httpServer = app.listen(8080, () => { console.log("foubu"); });
+const httpServer = app2.listen(3000, () => { console.log("foubu"); });
 const io = new socket_io_1.Server(httpServer, {
     cors: {
         origin: "http://localhost:5173",
@@ -88,7 +87,6 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     }));
 }));
 /////////////////////server//////////////////////////
-const app2 = (0, express_1.default)();
 app2.use((0, cookie_parser_1.default)());
 app2.use(express_1.default.json({ limit: '50mb' }));
 app2.use((0, cors_1.default)({
@@ -329,15 +327,12 @@ app2.post("/api/v2/cachedDocs", (req, res) => __awaiter(void 0, void 0, void 0, 
     const body = req.body;
     if ((decoded === null || decoded === void 0 ? void 0 : decoded.id) == null)
         return res.json({ msg: "error" });
-    console.log("hello");
     const response = yield redis_1.default.get(body.docsId.toString());
-    console.log("hello5");
     res.json({
         response
     });
     console.log(response);
     if (response == null) {
-        console.log("hello");
         const user = yield prisma.userConnectedToDocs.findMany({
             where: {
                 userId: decoded === null || decoded === void 0 ? void 0 : decoded.id,
@@ -358,4 +353,4 @@ app2.get("/trial", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     var valu;
     const msg = yield redis_1.default.get("msg");
 }));
-app2.listen(3000);
+//# sourceMappingURL=index.js.map

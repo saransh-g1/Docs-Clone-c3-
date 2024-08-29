@@ -3,7 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "pre-commit": [
+    "ts.check",
+    "build",
+    "add-build"
+  ],
   "scripts": {
+    "start": "nodemon src/index.ts",
+    "build": "rimraf dist && tsc",
+    "ts.check": "tsc --project tsconfig.json",
+    "add-build": "git add dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,7 +26,9 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "livedb": "^0.5.13",
+    "pre-commit": "^1.2.2",
     "redis": "^4.7.0",
+    "rimraf": "^6.0.1",
     "share": "^0.6.0",
     "socket.io": "^4.7.5",
     "ws": "^8.17.1"
