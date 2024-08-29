@@ -145,6 +145,11 @@ type signup={
   uid : string,
 }
 
+app2.get("/",(req,res)=>{
+  res.json({
+    msg:"working safely"
+  })
+})
 
 app2.post("/api/v1/signup",async (req,res)=>{
   try{
