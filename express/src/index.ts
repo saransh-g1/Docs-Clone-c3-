@@ -133,10 +133,10 @@ app2.use(cors({
   credentials: true,
   origin: "https://c3-docs.vercel.app"
 }));
+
+
+
 const prisma=new PrismaClient();
-
-
-
 
 
 
