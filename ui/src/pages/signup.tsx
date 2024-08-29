@@ -82,7 +82,7 @@ const nav= useNavigate()
             async()=>{
 
               setLoading(true);
-              const response=await axios.post("http://localhost:3000/api/v1/signup",
+              const response=await axios.post("https://docs-clone-c3.vercel.app/api/v1/signup",
                   {
                       email: email,
                       uid : password,

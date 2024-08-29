@@ -25,7 +25,7 @@ export function Dash(){
     const [docs, setdocs] =useState<info[]>()
     const [loader,setLoader]=useState<boolean>(true)
      useEffect(()=>{
-         axios.get("http://localhost:3000/api/v1/getdocswithconnecteduser", {
+         axios.get("https://docs-clone-c3.vercel.app/api/v1/getdocswithconnecteduser", {
             withCredentials: true,
           })
          .then((res)=>{
@@ -66,7 +66,7 @@ export function Dash(){
         <div className=" h-max flex items-center justify-center max-[480px]:flex  max-[480px]:flex-col">
             <div className="text-start mx-2">
               <button onClick={async()=>{
-              const response= await axios.get("http://localhost:3000/api/v1/createDoc",{
+              const response= await axios.get("https://docs-clone-c3.vercel.app/api/v1/createDoc",{
                     withCredentials:true
                 })
                 const id= response.data.doc.id

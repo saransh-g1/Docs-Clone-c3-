@@ -136,7 +136,7 @@ useEffect(() => {
          <input className="mt-1 rounded-lg border bg-stone-50 p-1 text-lg font-semibold w-full "    onChange={(e:any)=>{setPass(e.target.value)}} placeholder="password"></input>
          </div>
           <button className="my-5 rounded-md bg-blue-500 text-white h-10 text-2xl font-bold" onClick={async()=>{ setLoading(true);
-          const response =await axios.post("http://localhost:3000/api/v1/signin",
+          const response =await axios.post("https://docs-clone-c3.vercel.app/api/v1/signin",
                  {
                      email:email,
                      uid : password,
