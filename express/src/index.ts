@@ -44,7 +44,7 @@ var location="";
 const httpServer = app2.listen(3000, ()=>{console.log("foubu")})
 const io = new Server(httpServer, { 
     cors:{
-    origin: "http://localhost:5173",
+    origin: "https://c3-docs.netlify.app",
     credentials: true
 } });
 
@@ -131,7 +131,7 @@ app2.use(cookieParser())
 app2.use(express.json({limit:'50mb'}))
 app2.use(cors({
   credentials: true,
-  origin: "http://localhost:5173"
+  origin: "https://c3-docs.netlify.app"
 }));
 const prisma=new PrismaClient();
 

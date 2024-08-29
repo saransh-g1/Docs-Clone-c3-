@@ -25,7 +25,7 @@ var location = "";
 const httpServer = app2.listen(3000, () => { console.log("foubu"); });
 const io = new socket_io_1.Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "https://c3-docs.netlify.app",
         credentials: true
     }
 });
@@ -91,9 +91,14 @@ app2.use((0, cookie_parser_1.default)());
 app2.use(express_1.default.json({ limit: '50mb' }));
 app2.use((0, cors_1.default)({
     credentials: true,
-    origin: "http://localhost:5173"
+    origin: "https://c3-docs.netlify.app"
 }));
 const prisma = new client_1.PrismaClient();
+app2.get("/", (req, res) => {
+    res.json({
+        msg: "working safely"
+    });
+});
 app2.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = req.body;
