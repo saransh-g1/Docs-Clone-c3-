@@ -44,7 +44,8 @@ var location="";
 const httpServer = app2.listen(3000, ()=>{console.log("foubu")})
 const io = new Server(httpServer, { 
     cors:{
-    origin: "https://c3-docs.vercel.app",
+//    origin: "https://c3-docs.vercel.app",
+    origin:"*",    
     credentials: true
 } });
 
@@ -131,7 +132,8 @@ app2.use(cookieParser())
 app2.use(express.json({limit:'50mb'}))
 app2.use(cors({
   credentials: true,
-  origin: "https://c3-docs.vercel.app"
+ // origin: "https://c3-docs.vercel.app"
+ origin:"*"
 }));
 
 
