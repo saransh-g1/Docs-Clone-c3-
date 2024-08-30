@@ -55,17 +55,17 @@ const Editor = () => {
  const [cursorinRoom, setcursorinRoom]=useState<any>([]);
   const nav=useNavigate()
   useEffect(()=>{ 
-    const  socket= io();
+    const  socket= io("https://docs-clone-c3.onrender.com");
     const location=window.location.href
     const docid=location.split("/")
     setLoader(true)
-    axios.post("https://docs-clone-c3.vercel.app/api/v1/userConnectionDoc",{
+    axios.post("https://docs-clone-c3.onrender.com/api/v1/userConnectionDoc",{
       docsId:parseInt(docid[4])
     },{
       withCredentials:true
      }).then(res=>{
       console.log(res.data)
-      axios.post("https://docs-clone-c3.vercel.app/api/v2/cachedDocs",{
+      axios.post("https://docs-clone-c3.onrender.com/api/v2/cachedDocs",{
         docsId: parseInt(docid[4]),
        },{
         withCredentials:true
@@ -243,7 +243,7 @@ const cursorsOne:any = quiller.getModule('cursors');
 //       const link = document.createElement("a");
 //       link.href = dataUrl;
 //       console.log(dataUrl)
-//       axios.post("https://docs-clone-c3.vercel.app/api/v1/savedoc",{
+//       axios.post("https://docs-clone-c3.onrender.com/api/v1/savedoc",{
 //         image:dataUrl,
 //         ops:"hi"
 //       },{
@@ -267,7 +267,7 @@ const ele:any=document.getElementById("editer")
         const link = document.createElement("a");
         link.href = dataUrl;
         setLoader(true);
-        axios.post("https://docs-clone-c3.vercel.app/api/v1/savedocwithops",{
+        axios.post("https://docs-clone-c3.onrender.com/api/v1/savedocwithops",{
           id: parseInt(window.location.href.split("/")[4]),
           image:dataUrl,
           ops:ops
