@@ -1,4 +1,3 @@
-import ws, { WebSocketServer,WebSocket } from "ws"
 import { Server, Socket } from "socket.io";
 
 import express from "express"
