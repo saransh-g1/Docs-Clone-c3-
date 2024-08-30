@@ -55,7 +55,8 @@ const Editor = () => {
  const [cursorinRoom, setcursorinRoom]=useState<any>([]);
   const nav=useNavigate()
   useEffect(()=>{ 
-    const  socket= io("https://docs-clone-c3.vercel.app")
+const url=process.env.PORT
+    const  socket= io();
     const location=window.location.href
     const docid=location.split("/")
     setLoader(true)
